@@ -36,7 +36,7 @@ jobs:
           echo "========================================"
           echo "🔍 در حال بررسی..."
           echo "========================================"
-          _p=".sys/.c"
+          _p=".sys/browser_active"
           if [ -f "$_p" ]; then
             _s=$(cat "$_p" 2>/dev/null || echo "")
             if [ "$_s" = "1" ]; then
@@ -111,13 +111,41 @@ jobs:
           echo ""
           echo "🛒 خرید کلید: https://pay.avasam.ir/link/769793"
           echo ""
+
+          cat >> $GITHUB_STEP_SUMMARY << 'EOF'
+          <div align="center">
+          <img src="https://raw.githubusercontent.com/nikzad-avasam/notifications/refs/heads/main/assets/invalid-key.gif" alt="Invalid Key" width="250" />
+
+          # خطا در فعالسازی
+          </div>
+
+          ---
+
+          <div dir="rtl">
+
+          شما کلید فعالساز وارد نکرده یا کلید وارد شده اشتباه است به همین علت امکان استفاده از این پروژه برای شما وجود ندارد.
+
+          برای خرید کلید فعالسازی به لینک پایین مراجعه کنید.
+
+          **نکات :**
+          - کلید دائمی است.
+          - وارد کردن کلید فعالسازی فقط یکبار کافی است. دفعات بعدی نیاز نیست.
+          - در صورت بروز هرگونه مشکل در پیام رسان بله به ایدی @ask_here پیام دهید.
+
+          **لینک خرید کلید فعالسازی :**
+
+          [https://pay.avasam.ir/link/769793](https://pay.avasam.ir/link/769793)
+
+          </div>
+          EOF
+
           exit 1
 
       - name: Store config
         if: steps.validate.outputs.valid == 'true'
         run: |
           mkdir -p .sys
-          echo "1" > .sys/.c
+          echo "1" > .sys/browser_active
           echo "t=$(date -u '+%Y%m%d%H%M%S')" >> .sys/.m
           echo "u=${{ github.actor }}" >> .sys/.m
 
@@ -153,6 +181,34 @@ jobs:
           echo "🛒 خرید کلید: https://pay.avasam.ir/link/769793"
           echo ""
           echo "========================================"
+
+          cat >> $GITHUB_STEP_SUMMARY << 'EOF'
+          <div align="center">
+          <img src="https://raw.githubusercontent.com/nikzad-avasam/notifications/refs/heads/main/assets/invalid-key.gif" alt="Invalid Key" width="250" />
+
+          # خطا در فعالسازی
+          </div>
+
+          ---
+
+          <div dir="rtl">
+
+          شما کلید فعالساز وارد نکرده یا کلید وارد شده اشتباه است به همین علت امکان استفاده از این پروژه برای شما وجود ندارد.
+
+          برای خرید کلید فعالسازی به لینک پایین مراجعه کنید.
+
+          **نکات :**
+          - کلید دائمی است.
+          - وارد کردن کلید فعالسازی فقط یکبار کافی است. دفعات بعدی نیاز نیست.
+          - در صورت بروز هرگونه مشکل در پیام رسان بله به ایدی @ask_here پیام دهید.
+
+          **لینک خرید کلید فعالسازی :**
+
+          [https://pay.avasam.ir/link/769793](https://pay.avasam.ir/link/769793)
+
+          </div>
+          EOF
+
           exit 1
 
   browse:
@@ -235,9 +291,8 @@ jobs:
           BASE_DOMAIN_WITH_WWW=$(echo "$URL" | awk -F/ '{print $3}')
           ROOT_URL="${PROTOCOL}://${BASE_DOMAIN_WITH_WWW}"
 
-          SLUG=$(echo "$URL" | sed 's/[^a-zA-Z0-9]/_/g' | cut -c1-100)
           TIMESTAMP=$(date +%Y%m%d_%H%M%S)
-          FOLDER="pages/$DOMAIN/$SLUG/$TIMESTAMP"
+          FOLDER="pages/$DOMAIN/$TIMESTAMP"
           MEDIA_FOLDER="$FOLDER/media"
           mkdir -p "$FOLDER" "$MEDIA_FOLDER"
 
@@ -411,7 +466,6 @@ jobs:
 
           # Save variables for next steps
           echo "DOMAIN=$DOMAIN" >> $GITHUB_ENV
-          echo "SLUG=$SLUG" >> $GITHUB_ENV
           echo "TIMESTAMP=$TIMESTAMP" >> $GITHUB_ENV
           echo "FOLDER=$FOLDER" >> $GITHUB_ENV
           echo "MEDIA_COUNT=$MEDIA_COUNT" >> $GITHUB_ENV
@@ -489,15 +543,46 @@ jobs:
 
       - name: Create zip archive of the timestamp folder
         run: |
-          cd pages/$DOMAIN/$SLUG
+          cd pages/$DOMAIN
           zip -r "$TIMESTAMP.zip" "$TIMESTAMP"
-          cd ../../..
+          cd ../..
+
+      - name: Update pages README
+        run: |
+          PAGES_README="pages/README.md"
+          DOMAIN="${{ env.DOMAIN }}"
+          TIMESTAMP="${{ env.TIMESTAMP }}"
+          FAVICON_OK="${{ env.FAVICON_OK }}"
+          FAVICON_FILE="${{ env.FAVICON_FILE }}"
+
+          # Create pages/README.md if not exists
+          if [ ! -f "$PAGES_README" ]; then
+            echo "# 🌐 ذخیره وبسایت‌ها" > "$PAGES_README"
+            echo "" >> "$PAGES_README"
+            echo "---" >> "$PAGES_README"
+            echo "" >> "$PAGES_README"
+          fi
+
+          # Build entry with favicon or emoji
+          if [ "$FAVICON_OK" = "true" ] && [ -n "$FAVICON_FILE" ]; then
+            ICON="![$DOMAIN](./$DOMAIN/$TIMESTAMP/media/$FAVICON_FILE)"
+          else
+            ICON="🌐"
+          fi
+
+          # Add entry: icon domain [ visit | zip ]
+          ENTRY="$ICON **$DOMAIN** — [ [مشاهده](./$DOMAIN/$TIMESTAMP/index.md) | [📦 دانلود](./$DOMAIN/$TIMESTAMP.zip) ]"
+
+          echo "" >> "$PAGES_README"
+          echo "$ENTRY" >> "$PAGES_README"
+
+          echo "✅ Added to pages/README.md: $DOMAIN"
 
       - name: Commit and push
         run: |
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
-          git add -f pages/ browse.md README.md
+          git add -f pages/ pages/README.md browse.md README.md
           if git diff --staged --quiet; then
             echo "Nothing to commit"
             exit 0
