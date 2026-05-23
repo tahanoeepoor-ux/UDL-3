@@ -4,6 +4,7 @@
 - [What_We_Do_in_the_Shadows_S01E08_10bit_x265_1080p_WEB-DL_Ghost_30NAMA](./What_We_Do_in_the_Shadows_S01E08_10bit_x265_1080p_WEB-DL_Ghost_30NAMA)
 - [What_We_Do_in_the_Shadows_S01E09_10bit_x265_1080p_WEB-DL_Ghost_30NAMA](./What_We_Do_in_the_Shadows_S01E09_10bit_x265_1080p_WEB-DL_Ghost_30NAMA)
 - [What_We_Do_in_the_Shadows_S01E10_10bit_x265_1080p_WEB-DL_Ghost_30NAMA](./What_We_Do_in_the_Shadows_S01E10_10bit_x265_1080p_WEB-DL_Ghost_30NAMA)
+- [What_We_Do_in_the_Shadows_S02E01_10bit_x265_1080p_WEB-DL_Ghost_30NAMA](./What_We_Do_in_the_Shadows_S02E01_10bit_x265_1080p_WEB-DL_Ghost_30NAMA)
 
 ---
 
